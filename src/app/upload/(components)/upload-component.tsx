@@ -8,6 +8,7 @@ import Loader from "@/shared/components/loader";
 import toast from "react-hot-toast";
 import { useRouter } from 'next/navigation'
 import {useNavPageStore} from "@/store/nav-page";
+import {extractError} from "@/api/utils";
 
 
 interface UploadValues {
@@ -30,14 +31,14 @@ const isValidSize = (file: any)=>{
 const validationSchema = object().shape({
     title: string().required('Please enter a title'),
     description: string(),
-    targetFile: mixed<File>()
-        .test("required",'Please select target file', (targetFile)=> !!targetFile)
-        .test("required",'Invalid file format. Only CSV files are allowed.', (targetFile?: any)=> isValidFormat(targetFile))
-        .test("required",'File too large. Max file size is 5mb', (targetFile: any)=> isValidSize(targetFile)),
-    sourceFile: mixed<File>()
-        .test("required",'Please select source file', (targetFile)=> !!targetFile)
-        .test("required",'Invalid file format. Only CSV files are allowed.', (targetFile?: any)=> isValidFormat(targetFile))
-        .test("required",'File too large. Max file size is 5mb', (targetFile: any)=> isValidSize(targetFile)),
+    // targetFile: mixed<File>()
+    //     .test("required",'Please select target file', (targetFile)=> !!targetFile)
+    //     .test("required",'Invalid file format. Only CSV files are allowed.', (targetFile?: any)=> isValidFormat(targetFile))
+    //     .test("required",'File too large. Max file size is 5mb', (targetFile: any)=> isValidSize(targetFile)),
+    // sourceFile: mixed<File>()
+    //     .test("required",'Please select source file', (targetFile)=> !!targetFile)
+    //     .test("required",'Invalid file format. Only CSV files are allowed.', (targetFile?: any)=> isValidFormat(targetFile))
+    //     .test("required",'File too large. Max file size is 5mb', (targetFile: any)=> isValidSize(targetFile)),
 });
 
 const UploadComponent: FC = () => {
@@ -69,7 +70,7 @@ const UploadComponent: FC = () => {
             setLoading(false)
             toast.success('Upload successful!')
             router.push(`/report/${report.id}`)
-        })
+        }).catch(err => toast.error(extractError(err)))
     });
     useEffect(()=>{
         setPageTitle("Upload")
